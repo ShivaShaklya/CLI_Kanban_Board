@@ -7,7 +7,10 @@ def create_new_board():
         CREATE TABLE {}(
             task_id INT AUTO_INCREMENT PRIMARY KEY,
             task_name VARCHAR(255) NOT NULL,
-            status int NOT NULL
+            status int NOT NULL,
+            priority int NOT NULL,
+            assignee_id varchar(10) NOT NULL,
+            reporter_id varchar(10) NOT NULL 
         );
         """.format(name))
     except:
@@ -17,28 +20,35 @@ def display_board(board):
     ToDo=[]
     InPro=[]
     Done=[]
-    cur.execute("select task_name, status from {}".format(board))
+    p1=[]
+    p2=[]
+    p3=[]
+    priority={0:"Low",1:"Medium",2:"High"}
+    cur.execute("select task_name, status, priority from {}".format(board))
     tasks=cur.fetchall()
     for i in tasks:
         if(i[1]==0):
             ToDo.append(i[0])
+            p1.append(priority.get(i[2]))
         elif(i[1]==1):
             InPro.append(i[0])
+            p2.append(priority.get(i[2]))
         elif(i[1]==2):
             Done.append(i[0])
+            p3.append(priority.get(i[2]))
     
     print()
     print("TO DO")
     for i in range (len(ToDo)):
-        print(str(i+1)+". ",ToDo[i])
+        print(str(i+1)+". ",ToDo[i],"\t",p1[i])
     print()
     print("IN PROGRESS")
     for i in range (len(InPro)):
-        print(str(i+1)+". ",InPro[i])
+        print(str(i+1)+". ",InPro[i],"\t",p2[i])
     print()
     print("DONE")
     for i in range (len(Done)):
-        print(str(i+1)+". ",Done[i])
+        print(str(i+1)+". ",Done[i],"\t",p3[i])
     print()
 
     return ToDo,InPro,Done
@@ -46,8 +56,11 @@ def display_board(board):
 def Add_Task(board):
     task_name=input("Enter task name: ")
     status=int(input("Enter Status(0: To Do, 1: In progress, 2: Done): "))
-    values=(task_name,status)
-    q="insert into {}(task_name, status) values (%s, %s)".format(board)
+    priority=int(input("Enter priority(0: Low, 1: Medium, 2: High): "))
+    assignee_id=input("Enter assignee_id: ")
+    reporter_id=input("Enter reporter id: ")
+    values=(task_name,status,priority,assignee_id,reporter_id)
+    q="insert into {}(task_name, status,priority,assignee_id,reporter_id) values (%s, %s,%s,%s,%s)".format(board)
     cur.execute(q,values)
     mycon.commit()
     print("task added")
@@ -79,7 +92,10 @@ try:
         CREATE TABLE IF NOT EXISTS kanban_board (
             task_id INT AUTO_INCREMENT PRIMARY KEY,
             task_name VARCHAR(255) NOT NULL,
-            status int NOT NULL
+            status int NOT NULL,
+            priority int NOT NULL,
+            assignee_id varchar(10) NOT NULL,
+            reporter_id varchar(10) NOT NULL 
         );
     """)
 except con.Error as err:
