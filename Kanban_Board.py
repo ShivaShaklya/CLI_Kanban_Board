@@ -40,18 +40,18 @@ def display_board(board):
     print()
     print("TO DO")
     for i in range (len(ToDo)):
-        print(str(i+1)+". ",ToDo[i],"\t",p1[i])
+        print(str(i+1)+". ",ToDo[i],"    ",p1[i])
     print()
     print("IN PROGRESS")
     for i in range (len(InPro)):
-        print(str(i+1)+". ",InPro[i],"\t",p2[i])
+        print(str(i+1)+". ",InPro[i],"    ",p2[i])
     print()
     print("DONE")
     for i in range (len(Done)):
-        print(str(i+1)+". ",Done[i],"\t",p3[i])
+        print(str(i+1)+". ",Done[i],"    ",p3[i])
     print()
 
-    return ToDo,InPro,Done
+    return ToDo,InPro,Done,p1,p2,p3
 
 def Add_Task(board):
     task_name=input("Enter task name: ")
@@ -80,6 +80,46 @@ def Delete_Task(board):
             print("Invalid status.")
     except Exception as e:
         print("An error occurred:", e)
+
+def Sort(board):
+    status_list=[ToDo,InPro,Done]
+    priority_list=[p1,p2,p3]
+
+    for k in priority_list:
+        for m in range(len(k)):
+            if(k[m]=="High"):
+                k[m]=2
+            elif(k[m]=="Medium"):
+                k[m]=1
+            elif(k[m]=="Low"):
+                k[m]=0
+    
+    print(status_list[0],p1)
+    for l in range (len(priority_list)):
+        p_list=priority_list[l]
+        s_list=status_list[l]
+        for i in range(len(p_list)):
+            for j in range(len(p_list)):
+                if(p_list[i]>p_list[j]):
+                    p_list[i],p_list[j]=p_list[j],p_list[i]
+                    s_list[i],s_list[j]=s_list[j],s_list[i]
+
+    print(ToDo,p1)
+    priority={0:"Low",1:"Medium",2:"High"}
+    
+    print()
+    print("TO DO")
+    for i in range (len(ToDo)):
+        print(str(i+1)+". ",ToDo[i],"    ",priority.get(p1[i]))
+    print()
+    print("IN PROGRESS")
+    for i in range (len(InPro)):
+        print(str(i+1)+". ",InPro[i],"    ",priority.get(p2[i]))
+    print()
+    print("DONE")
+    for i in range (len(Done)):
+        print(str(i+1)+". ",Done[i],"    ",priority.get(p3[i]))
+    print()
 
 ##
 p=input("Enter your mysql password: ")
@@ -117,16 +157,18 @@ if(choice==ctr):
     create_new_board()
 else:
     board=boards[choice-1][0]
-    ToDo,InPro,Done=display_board(board)
+    ToDo,InPro,Done,p1,p2,p3=display_board(board)
 
 c=0
-while(c!=4):
-    print("1. Add new Task\n2. Delete a task\n3. Display Board\n4. Exit")
+while(c!=5):
+    print("1. Add new Task\n2. Delete a task\n3. Sort Tasks\n4. Display Board\n5. Exit")
     c=int(input("Enter choice: "))
     if (c==1):
         Add_Task(board)
     elif(c==2):
         Delete_Task(board)
-    elif (c==3):
-        ToDo,InPro,Done=display_board(board)
+    elif(c==3):
+        Sort(board)
+    elif (c==4):
+        ToDo,InPro,Done,p1,p2,p3=display_board(board)
 
